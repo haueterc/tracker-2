@@ -1,0 +1,12 @@
+headers:
+      { Accept: 'application/json, text/plain, */*',
+        'Content-Type': 'application/json',
+        'User-Agent': 'axios/0.18.0' },
+     method: 'post',
+     url: 'https://chandler1.auth0.com/oauth/token',
+     body:
+      { client_id: 'QxF49iTSHpkw7La1wubCPOWWaUXOYnEj',
+        client_secret: 'PnS9cFpwLe-N2ALS-ecGAJ2SgYTKUoDzrnISfRJrzHosG9-FkZI0BgDWVvjcc5JW',
+        audience: 'https://chandler1.auth0.com/api/v2/',
+        grant_type: 'client_credentials' },
+     data: undefined },

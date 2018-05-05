@@ -1,14 +1,16 @@
 import React from 'react';
-import logo from './communityBank.svg';
-import './Home.css';
+import NavBar from '../NavBar/NavBar';
+import Search from '../Search/Search';
+import Results from '../Results/Results';
+import Footer from '../Footer/Footer';
 
 export default function Home() {
     return (
-        <div className="App">
-            <img src={logo} alt="pic"/>
-            <a href={ process.env.REACT_APP_LOGIN }>
-                <button>Login</button>
-            </a>
+        <div >
+            <NavBar/>
+            <Search/>
+            <Results/>
+            <Footer/>
         </div>
     )
 }

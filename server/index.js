@@ -1,9 +1,14 @@
 require('dotenv').config();
 const express = require('express')
+    , axios = require('axios')
+    , bodyParser = require('body-parser')
     , session = require('express-session')
     , passport = require('passport')
     , Auth0Strategy = require('passport-auth0')
     , massive = require('massive')
+    , aa = require('./controllers/Auth0/Auth0_Axios')
+    , ama = require('./controllers/Auth0/Auth0_Management_API_controller')
+    , tc = require('./controllers/Twitter/Twitter_controller')
 
 const app = express();
 const {
@@ -14,7 +19,6 @@ const {
     CLIENT_SECRET,
     CALLBACK_URL,
     CONNECTION_STRING
-
 } = process.env;
 
 massive(CONNECTION_STRING).then( db => {
@@ -23,6 +27,8 @@ massive(CONNECTION_STRING).then( db => {
 //-- serve up static files from npm run build
 // app.use(express.static(__dirname + './../build'))
 //---
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: SESSION_SECRET,
     resave: false,
@@ -42,7 +48,6 @@ passport.use(new Auth0Strategy({
     const db = app.get('db');
     // massive wants arguments passed in as an array
     const { id, displayName, picture } = profile;
-    console.log(profile);
     db.find_user([id]).then( users => {
         // check to see if the array has an item because an empty array could be returned
         if (users[0]) {
@@ -75,7 +80,7 @@ app.get('/auth/callback', passport.authenticate('auth0', {
     // to a specific page successRedirect: 'http://localhost:3000/#/somepage'
     // change the port after npm run build to point to the backend server
     successRedirect: 'http://localhost:3000/#/private',
-    failureRedirect: 'http://localhost:3000'
+    failureRedirect: 'http://localhost:3000/#/'
 }))
 app.get('/auth/me', function(req, res) {
     if (req.user) {
@@ -85,10 +90,20 @@ app.get('/auth/me', function(req, res) {
     }
 })
 
+app.put('/handle', tc.getHandles)
+
+var myLogger = function (req, res, next) {
+    console.log('NEXTED')
+  }
+  
+  app.use(myLogger)
+
 app.get('/logout', function(req, res) {
     req.logOut();
     res.redirect('http://localhost:3000')
 })
+
+
 
 
 app.listen(SERVER_PORT, () => {

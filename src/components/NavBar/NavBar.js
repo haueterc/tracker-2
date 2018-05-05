@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { getUser } from './../../ducks/reducer';
-import { Navbar, Nav, NavDropdown, NavItem, MenuItem, Image } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
 import './NavBar.css';
 
 class NavBar extends Component {
-
-    componentDidMount() {
-        this.props.getUser();
-    }
-
     render() {
-        let { display_name, img, auth_id } = this.props.user;
+        let { display_name, img } = this.props.user;
         return (
         <Navbar inverse collapseOnSelect>
         <Navbar.Header>
             <Navbar.Brand>
-            <a href="#">Tracker</a>
+            <a href="#/">{display_name}</a>
             </Navbar.Brand>
             <Navbar.Toggle />
         </Navbar.Header>
@@ -37,10 +31,10 @@ class NavBar extends Component {
             </NavDropdown>
             </Nav>
             <Nav pullRight>
-            <NavItem eventKey={1} href="#">
+            <NavItem eventKey={1} href="#/">
                 { display_name }
             </NavItem>
-            <NavItem eventKey={2} href="#">
+            <NavItem eventKey={2} href="#/">
                 Link Right
             </NavItem>
             </Nav>
@@ -55,8 +49,7 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, {getUser})(NavBar);
-
+export default connect(mapStateToProps)(NavBar);
 
 
 

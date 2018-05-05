@@ -1,0 +1,33 @@
+
+img.img-rounded {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    display: block;
+}
+
+nav.navbar.navbar-inverse {
+    margin: 2px;
+}
+
+div.well.well-sm {
+    margin: 2px;
+}
+
+div.form-group.form-group-lg {
+    margin: 2px;
+}
+
+svg {
+    margin: 0 auto;
+    display: block;
+}
+
+.presize {
+    font-size: 22px !important;
+    margin: 0 auto !important;
+}
+
+.nopadding {
+    padding: 0 !important;
+ }
