@@ -1,3 +1,3 @@
 SELECT *
 FROM users
-WHERE auth_id = $1;
+WHERE platform_and_id = $1;

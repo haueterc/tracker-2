@@ -1,54 +1,48 @@
-require('dotenv').config();
-const bodyParser = require('body-parser')
-
 const { 
-    YOUR_ACCOUNT, 
+    SERVER_PORT,
+    YOUR_ACCOUNT,
     YOUR_NON_INTERACTIVE_CLIENT_ID, 
     YOUR_NON_INTERACTIVE_CLIENT_SECRET,
     YOUR_ACCESS_TOKEN,
+    MANAGEMENT_API_SCOPES,
     USER_ID
 } = process.env;
 
+// Linking Auth0 Management API V2 Accounts
+const {
+    PRIMARY_ACCOUNT_JWT,
+    SECONDARY_ACCOUNT_JWT,
+    UPDATE_IDENTITIES
+} = process.env;
+
+var AuthenticationClient = require('auth0').AuthenticationClient;
+
+var auth0 = new AuthenticationClient({
+  domain: `${YOUR_ACCOUNT}.auth0.com`,
+  clientId: `${YOUR_NON_INTERACTIVE_CLIENT_ID}`,
+  clientSecret: `${YOUR_NON_INTERACTIVE_CLIENT_SECRET}`
+});
+
 module.exports={
-    getAuth0Token: function(req, res, next) {
-        var request = require("request");
-    
-        var options = { 
-            method: 'POST',
-            url: `https://${YOUR_ACCOUNT}.auth0.com/oauth/token`,
-            headers: 
-                { 'Content-Type': 'application/json' },
-            body: 
-                {   client_id: `${YOUR_NON_INTERACTIVE_CLIENT_ID}`,
-                    client_secret: `${YOUR_NON_INTERACTIVE_CLIENT_SECRET}`,
-                    audience: `https://${YOUR_ACCOUNT}.auth0.com/api/v2/`,
-                    grant_type: 'client_credentials' },
-            json: true 
-            };
+    getAuth0FullUserProfile: function(user_id, cb) {
+        auth0.clientCredentialsGrant({
+            audience: `https://${YOUR_ACCOUNT}.auth0.com/api/v2/`,
+            scope: `${MANAGEMENT_API_SCOPES}`
+          },
+          function(err, response) {
+            var request = require("request");
         
-        request(options, function (error, response, body) {
-          if (error) throw new Error(error);
-          if (body) {
-              console.log('------> body["access_token"]', body["access_token"])
-          }
-        });
-
-        res.status(200).send('Hit-----> Auth0_Management_API_CONTROLLER!')
-    },
-    getAuth0Profile: function(req, res, next) {
-        req.app.use(bodyParser.json());
-        var request = require("request");
-
-        var options = { 
-            method: 'GET',
-            url: `https://${YOUR_ACCOUNT}.auth0.com/api/v2/users/${USER_ID}`,
-            headers: 
-                { authorization: `Bearer ${YOUR_ACCESS_TOKEN}`}
-            };
-
-        request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-        console.log(body);
-        });
+            var options = { 
+                method: 'GET',
+                url: `https://${YOUR_ACCOUNT}.auth0.com/api/v2/users/${user_id}`,
+                headers: 
+                    { authorization: `Bearer ${response.access_token}`}
+                };
+        
+            request(options, function (error, response, body) {
+                if (error) throw new Error(error);
+                let obj = JSON.parse(body);
+                cb(obj)
+            }); } );
     }
 }

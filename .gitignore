@@ -1,5 +1,8 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
+# random files
+Auth0_Full_Profile_Example.json
+
 # dependencies
 /node_modules
 

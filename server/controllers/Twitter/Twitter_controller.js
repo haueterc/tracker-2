@@ -1,20 +1,17 @@
+let axios = require('axios')
+  , qs = require('qs')
+
 module.exports={
-    getHandles: function(req, res) {
-        const { handle } = req.body.data;
-        const dbInstance = req.app.get('db');
-        
-        dbInstance.get_handles([handle])
-        .then( handles => res.status(200).send( handles ))
-        .then( console.log('handles returned to frontend'))
-        .catch( err => res.status(500).send(`big'ol error @ Twitter_controller.getHandles`, err));
-    },
-    create: ( req, res, next ) => {
-      const dbInstance = req.app.get('db');
-  
-      dbInstance.create_product()
-        .then( () => res.status(200).send() )
-        .catch( () => res.status(500).send() );
-    },
+    getTweet: function(req, res, next) {
+      console.log('index/tc.getTweet>', req.user);
+      let { access_token, access_token_secret } = req.user;
+      var url = 'https://api.twitter.com/1.1/users/show.json?' + qs.stringify(access_token, access_token_secret);
+      axios.get(url)
+      .then( tweet => {
+        console.log(tweet);
+        res.status(200).send(tweet)})
+      .catch( ()=> res.status(500).send());
+      },
   
     getOne: ( req, res, next ) => {
       const dbInstance = req.app.get('db');

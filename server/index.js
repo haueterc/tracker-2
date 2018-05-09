@@ -6,9 +6,10 @@ const express = require('express')
     , passport = require('passport')
     , Auth0Strategy = require('passport-auth0')
     , massive = require('massive')
-    , aa = require('./controllers/Auth0/Auth0_Axios')
     , ama = require('./controllers/Auth0/Auth0_Management_API_controller')
+    , lac = require('./controllers/Auth0/Link_Accounts_controller')
     , tc = require('./controllers/Twitter/Twitter_controller')
+    , hc = require('./controllers/Handles/Handles_controller')
 
 const app = express();
 const {
@@ -19,6 +20,13 @@ const {
     CLIENT_SECRET,
     CALLBACK_URL,
     CONNECTION_STRING
+} = process.env;
+
+// Linking Auth0 Management API V2 Accounts
+const {
+    PRIMARY_ACCOUNT_JWT,
+    SECONDARY_ACCOUNT_JWT,
+    UPDATE_IDENTITIES
 } = process.env;
 
 massive(CONNECTION_STRING).then( db => {
@@ -46,19 +54,24 @@ passport.use(new Auth0Strategy({
 }, function(accessToken, refreshToken, extraParams, profile, done) {
 // db calls
     const db = app.get('db');
-    // massive wants arguments passed in as an array
-    const { id, displayName, picture } = profile;
-    db.find_user([id]).then( users => {
-        // check to see if the array has an item because an empty array could be returned
-        if (users[0]) {
-            return done(null, users[0].id)
-        } else {
-            db.create_user([displayName, picture, id])
-            .then( createdUser => {
-                return done(null, createdUser[0].id)
-            })
-        }
-    } )
+    let { user_id, displayName, picture } = profile;
+    let auth_id = user_id;
+    ama.getAuth0FullUserProfile(auth_id, (respData)=>{
+        let { provider, user_id, access_token, access_token_secret} = respData.identities[0];
+        // massive wants arguments passed in as an array
+        db.find_user([auth_id]).then( users => {
+            // check to see if the array has an item because an empty array could be returned
+            if (users[0]) {
+                return done(null, users[0].id)
+            } else {
+                db.create_user([displayName, picture, auth_id, provider, user_id, access_token, access_token_secret])
+                .then( createdUser => {
+                    return done(null, createdUser[0].id)
+                }).catch(err=>{console.log('it was here', err)})
+            }
+        } ).catch(console.log)
+    })
+
 })) 
 
 passport.serializeUser( (id, done) => {
@@ -72,7 +85,7 @@ passport.deserializeUser( (id, done) => {
     // fires before anything else like componentdidmount
     app.get('db').find_session_user([id]).then( user => {
         done(null, user[0]);
-    })
+    }).catch(console.log)
 })
 
 app.get('/auth', passport.authenticate('auth0'))
@@ -84,27 +97,26 @@ app.get('/auth/callback', passport.authenticate('auth0', {
 }))
 app.get('/auth/me', function(req, res) {
     if (req.user) {
+        console.log(req.user);
         res.status(200).send(req.user);
     } else {
         res.status(401).send('Nice try sucka')
     }
 })
 
-app.put('/handle', tc.getHandles)
+app.get('/twitter', tc.getTweet)
 
-var myLogger = function (req, res, next) {
-    console.log('NEXTED')
-  }
-  
-  app.use(myLogger)
+app.get('/twitter/callback', )
+
+app.put('/handle', hc.getHandles)
+
+app.put('/link/accounts', lac.linkAccounts)
 
 app.get('/logout', function(req, res) {
+    console.log('hit /logout')
     req.logOut();
     res.redirect('http://localhost:3000')
 })
-
-
-
 
 app.listen(SERVER_PORT, () => {
     console.log(`Listening on Port: ${SERVER_PORT}`)
