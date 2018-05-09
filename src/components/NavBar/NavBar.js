@@ -1,18 +1,32 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import { Navbar, Nav, NavDropdown, NavItem, MenuItem } from 'react-bootstrap';
+import  { connect } from 'react-redux'
+import  { Navbar
+        , Nav
+        , NavDropdown
+        , NavItem
+        , MenuItem
+        , Image
+} from 'react-bootstrap';
 import './NavBar.css';
 
 class NavBar extends Component {
     render() {
-        let { display_name, img } = this.props.user;
+        let { display_name, picture } = this.props.user;
         return (
         <Navbar inverse collapseOnSelect>
         <Navbar.Header>
-            <Navbar.Brand>
-            <a href="#/">{display_name}</a>
+            {display_name?
+            <Navbar.Brand className="lifting-pic">
+                <span>
+                    <Image 
+                        rounded
+                        href="" 
+                        alt=""
+                        src={picture} />
+                </span>
             </Navbar.Brand>
-            <Navbar.Toggle />
+            : null}
+        <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
             <Nav>

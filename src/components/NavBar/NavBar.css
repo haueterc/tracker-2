@@ -6,6 +6,11 @@
       border-radius: 50%;
   }
 
-  button.collapsed {
+button.collapsed {
       width: 40px;
   }
+
+.lifting-pic {
+    padding: 9px  9px !important;
+}
+

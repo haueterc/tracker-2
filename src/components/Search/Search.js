@@ -1,56 +1,58 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getHandle } from './../../ducks/reducer';
+import { updateHandle, getHandle, updateToggle} from './../../ducks/reducer';
 import { FormGroup, FormControl, InputGroup } from 'react-bootstrap';
+import SearchIcon from 'react-icons/lib/md/search';
+import Icon from '../Icon/Icon';
+import NoResult from '../Results/NoResult/NoResult';
 import './Search.css';
 
 class Search extends Component {
     constructor() {
         super();
-
-        this.state={
-            handle: ''
-        }
         
-        this.updateHandle = this.updateHandle.bind(this);
-        this.queryHandlesTable = this.queryHandlesTable.bind(this);
+        this.updateIcon = this.updateIcon.bind(this);
     }
 
-    updateHandle( handle ) {
-        this.setState({ handle });
-    }
-    
-    queryHandlesTable( key ) {
-        if (key === 'Enter') {
-            this.props.getHandle(this.state.handle);
-        }
+    updateIcon() {
+        let { toggle } = this.props;
+        toggle ? this.props.updateToggle({toggle: false}) : this.props.updateToggle({toggle: true});
     }
 
     render() {
-        const { handle } = this.state;
-
-        return (
-            <form>
-                <FormGroup bsSize="large">
-                    <InputGroup>
-                        <InputGroup.Addon>@</InputGroup.Addon>
-                        <FormControl
-                             type="text"
-                             placeholder="handle" 
-                             value={ handle }
-                             onChange={(e)=>this.updateHandle(e.target.value)} 
-                             onKeyUp={(e)=>this.queryHandlesTable(e.key)} />
-                    </InputGroup>
-                </FormGroup>
-            </form>
+        let { handle, platform, toggle } = this.props;
+    return (
+            <div>
+                <form>
+                    <FormGroup bsSize="large">
+                        <InputGroup>
+                            <InputGroup.Addon>
+                                <span onClick={(e)=>this.updateIcon()}>
+                                    <Icon value={platform}/>
+                                </span>
+                            </InputGroup.Addon>
+                            <FormControl
+                                type="text"
+                                placeholder="handle"
+                                value={handle}
+                                onChange={(e)=>this.props.updateHandle(e.target.value)} 
+                                onKeyDown={(e)=>e.keyCode===13?this.props.getHandle(handle):null}/>
+                                    
+                        </InputGroup>
+                    </FormGroup>
+                </form>
+               { toggle ? <NoResult/> : null }
+            </div>
         )
     }
 }
 
 function mapStateToProps(state) {
     return {
-        handle: state.handle
+        handle: state.handle,
+        platform: state.platform,
+        toggle: state.toggle
     }
 }
 
-export default connect(mapStateToProps, {getHandle})(Search);
+export default connect(mapStateToProps, {updateHandle, getHandle, updateToggle})(Search);

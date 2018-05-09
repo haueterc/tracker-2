@@ -7,18 +7,18 @@ import Result from './Result/Result';
 class Results extends React.Component {
     render() {
         let { handles } = this.props;
-        let { fakeimg } = this.props;
+        let { picture } = this.props.user;
         return (
             <div >
                 { handles[0] ? (
-                    handles.map( handle => (
-                        <Result 
-                        platform={ handle.social_media_platform } 
-                        key={ handle.id }
-                        fakeimg={ fakeimg }
-                        profile_pic={ handle.img }
-                        handle={ handle.handle }/>
-                    ))) : null }
+                handles.map( handle => (
+                    <Result 
+                    platform={ handle.social_media_platform } 
+                    key={ handle.id }
+                    fakeimg={ picture }
+                    profile_pic={ handle.picture }
+                    handle={ handle.handle }/>
+                ))) : null }
             </div>
         )
     }
@@ -27,11 +27,11 @@ class Results extends React.Component {
 function mapStateToProps(state) {
     return {
         handles: state.handles,
+        user: state.user
     }
 }
 
 export default connect(mapStateToProps)(Results);
-
 
 
 

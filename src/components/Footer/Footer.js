@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
 import { Well, Grid, Row, Col } from 'react-bootstrap';
 import Login from './Login/Login';
 import Logout from './Logout/Logout';

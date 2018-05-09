@@ -5,7 +5,6 @@ import { getUser } from './../../ducks/reducer';
 import NavBar from '../NavBar/NavBar';
 import Search from '../Search/Search';
 import Results from '../Results/Results';
-import Tile from '../Tile/Tile';
 import Footer from '../Footer/Footer';
 
 
@@ -15,14 +14,11 @@ class Private extends React.Component {
     }
 
     render() {
-        let { display_name, auth_id, img } = this.props.user;
-        let { handles } = this.props;
         return (
             <div id="main_div">
                 <NavBar/>
                 <Search/>
-                <Results
-                    fakeimg={ img }/>
+                <Results/>
                 <Footer/>
             </div>
         )
@@ -31,7 +27,6 @@ class Private extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        handles: state.handles,
         user: state.user
     }
 }
